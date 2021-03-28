@@ -1,76 +1,73 @@
 # Assignment1
-## 1. 摘要：
-Factor investing 因子投资-单因子测试框架：
+## 1. Abstract：
+Factor investing -Single Factor Testing Framework：
 
-本项目主要参考以下两篇研报构建了单因子测试框架，采用了**回归法、IC评价体系以及分组回溯法**来对单因子选股效果进行评价
+This project mainly refers to the following two research reports to construct a single factor testing framework, and uses **regression method, IC evaluation system and grouping backtracking method** to evaluate the effect of single factor stock selection
 
-## 2. 参考研报：
+## 2. Research paper：
 20170410-光大证券-光大证券多因子系列报告之一：因子测试框架
 
 20180306-方正证券-方正证券“远山”量化选股系列（一）：规矩，方正单因子测试之评价体系
 
-## 3. 代码逻辑及说明：
-（1）第一步：数据读取/输入
+## 3. Code logic and explaination：
+（1）Step1：input data
 
-这里所指的数据包括**股票行情数据、因子值以及行业分类（后用于行业中性化）**，其中本项目中股票行情数据、因子值和行业分类数据均为.mat格式。其中因子值的读取也提供了其他两种方式：通过.csv读取或通过具体计算方式获取
+The data here include **stock market data, factor value and industry classification (later used for industry neutrality)**, where the stock market data, factor value and industry classification data used in this project are in .mat format. There are also two other ways to read the factor value: reading csv file or through concrete calculation.
 
-（2）第二步：数据预处理
+（2）Step2：data preprocessing
 
-包括一系列对数据类型以及格式的处理，如：将array序列转为list、将array序列转为datetime、将date_num转化为list、统一日期：日期对齐、获取股票池收盘价数据等
+Includes a series of data type and format processing, such as: Array sequence to list, Array sequence to datetime, date_num to list, unified date: date alignment, obtaining stock pool closing price data, etc
 
-（3）第三步：因子值加工
+（3）Step3：factor value processing
 
-异常值处理：MAD中位数去极值法  --> z-score标准化/归一化  --> **行业、市值中性化**  --> 再次z-score标准化/归一化
+Outlier treatment: MAD median de-extremalization method --> Z-score standardization/normalization --> **industry, market capitalization neutrality** -->restandardization/normalization again
 
-（4）第四步：收益率加工
+（4）Step4：return rate processing 
 
-在原始日收益率基础上，乘上复权因子计算**复权日收益率**
+On the basis of the original daily rate of return, multiply by the compound weighting factor to calculate **daily rate of return**
 
-（5）第五步：因子评价体系
+（5）Step5：factor evaluation system
 
-回归法：计算因子收益率序列及t值序列，进而输出因子收益率大于0的概率、因子收益率均值、t值绝对值的均值、t值绝对值大于0的概率、t值绝对值大于2的概率等指标
+Regression method: calculate the sequence of factor rate of return and T-value sequence, and then output the probability of factor rate of return greater than 0, the mean value of factor rate of return, the mean value of absolute value of T-value, the probability of absolute value of T-value greater than 0, the probability of absolute value of T-value greater than 2 and other indicators
 
-IC体系：在每个时间截面上计算IC值得到normal IC序列，进而输出**IC均值**、IC标准差、**IC>0的比例**、**IC的绝对值>=0.02的比例**、IR等指标
+IC system: Calculate IC value to Normal IC sequence on each time section, and then output **IC mean**, IC standard deviation, **proportion of IC>0,** **proportion of IC absolute value >0.02,** IR and other indexes
 
-**分组回溯法**：月末调仓，根据因子值大小将股票池分为5组+多空组，计算五个组的日收益率从而算出每组的净值变化序列，最终输出净值曲线以及各种回测指标（年化收益率、最大回撤、夏普比等）
+**Group backtracking method** : adjust the position at the end of the month, divide the stock pool into 5 groups plus a "long-short group" according to the value of the factor, calculate the daily return rate of the five groups so as to calculate the sequence of net value change of each group, and finally output the net value curve and various backtest indicators (annualized return rate, maximum retraction, Sharpe ratio, etc.)
+
+## 4. Output result：
+Testing the market value factor, here's the result:
+
+（1）Regressiong Method：
+
+Probability of factor return greater than 0:0.4896
+
+Average factor rate of return: 0.0003
+
+The mean value of the absolute value of T-values: 0.3170
+
+Probability of T-value greater than 0: 1.0000
+
+Probability of T-value greater than 2: 0.5957
 
 
+（2）IC System
 
+IC mean value: -0.0153
 
-## 4. 输出结果：
-对MV市值因子进行测试，结果如下：
+IC standard deviation: 0.0887
 
-（1）回归法：
+Ratio of IC>0:0.3889
 
-因子收益率大于0的概率：0.4896
+The proportion of IC with absolute value greater than 0.02: 0.8272
 
-因子收益率均值：0.0003
+（3）Grouping backtracking method 
+(Note: there were 183 transactions in the backtracking period, Group1 was the one with the smallest factor value, Group5 was the one with the largest factor value, Top_bottom group bought long Group1 and shorted Group5)
 
-t值绝对值的均值：0.3170
+netvalue curve of each group:
 
-t值绝对值大于0的概率：1.0000
+![netvalue curve](https://github.com/algo21-Sam/Assignment1/blob/master/net_value.jpg)
 
-t值绝对值大于2的概率：0.5957
-
-（2）IC体系
-
-IC均值：-0.0153
-
-IC标准差：0.0887
-
-IC>0的比例：0.3889
-
-IC绝对值大于0.02的比例：0.8272
-
-IR：-0.1725
-
-（3）分组回溯法（注：回溯期内共交易183次，group1为因子值最小的，group5为因子值最大，top_bottom多空组买多group1卖空group5）
-
-各组净值曲线图：
-
-![净值曲线](https://github.com/algo21-Sam/Assignment1/blob/master/net_value.jpg)
-
-各组年化收益率：
+Annulized return rate of each group:
 
 Group1：0.4294
 
@@ -84,7 +81,7 @@ Group5：0.1797
 
 Top-bottom：0.3179
 
-各组的最大回撤率：
+Maximum-drawdown of each group:
 
 Group1：0.6492
 
@@ -98,7 +95,7 @@ Group5：0.9780
 
 Top-bottom：0.0412
 
-各组的夏普比：
+Sharpe Ratio of each group
 
 Group1：1.4684
 
